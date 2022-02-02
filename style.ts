@@ -1,32 +1,37 @@
-import { Dimensions, StyleSheet } from "react-native";
-const widthScreen = Dimensions.get("screen").width;
+import {Dimensions, StyleSheet} from 'react-native';
+const widthScreen = Dimensions.get('screen').width;
 const styles = StyleSheet.create({
   textStyle: {
     paddingTop: 50,
-    textAlign: "center",
-    color: "red",
+    textAlign: 'center',
+    color: 'red',
   },
   header: {
-    backgroundColor: "#18c3e5",
-    width: "100%",
+    backgroundColor: '#18c3e5',
+    width: '100%',
     height: 56,
-    justifyContent: "center",
-    alignContent: "center",
+    justifyContent: 'center',
+    alignContent: 'center',
     padding: 10,
   },
   headerText: {
     fontSize: 20,
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "left",
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
   container: {
-    flexDirection: "column",
+    flexDirection: 'column',
     padding: 20,
   },
-  textInput:{
-    padding:10
-  }
+  textInput: {
+    padding: 10,
+  },
+  RNPickerView: {
+    paddingVertical: 20,
+    backgroundColor: '#efefef',
+    marginBottom: 10,
+  },
 });
 
 export default styles;

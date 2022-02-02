@@ -1,20 +1,19 @@
-import React from "react";
-import { render } from "@testing-library/react-native";
-import { cleanup } from "@testing-library/react-native";
-import { expect } from "@jest/globals";
+import React from 'react';
+import {render} from '@testing-library/react-native';
+import {expect} from '@jest/globals';
 
-import App from "../App";
+import App from '../App';
 
-describe("<App />", () => {
-  test("has button", () => {
+describe('<App />', () => {
+  test('has button', () => {
     const screen = render(<App />);
-    expect(screen.getByTestId("CalculateButton")).toBeTruthy();
+    expect(screen.getByTestId('CalculateButton')).toBeTruthy();
   });
-  test("is result", () => {
+  test('is result present', () => {
     const screen = render(<App />);
-    expect(screen.getByTestId("result")).toBeTruthy();
+    expect(screen.getByTestId('result')).toBeTruthy();
   });
-  test("had title", () => {
+  test('has title', () => {
     const screen = render(<App />);
     expect(screen.getByText(/Big Health/)).toBeTruthy();
   });

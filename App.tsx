@@ -1,30 +1,23 @@
-import React, { useState, useEffect } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  Button,
-  SafeAreaView,
-} from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import RNPickerSelect from "react-native-picker-select";
-import api from "./service/api";
-import styles from "./style";
+import React, {useState, useEffect} from 'react';
+import {Text, View, Button, SafeAreaView} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import {Picker} from '@react-native-community/picker';
+import api from './service/api';
+import styles from './style';
 
 const App = () => {
-  const [timeData, setTime] = useState<{ label: string; value: number }[]>([]);
+  const [timeData, setTime] = useState<{label: string; value: number}[]>([]);
   const {
     control,
     setValue,
     getValues,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm({ mode: "onChange" });
-  const [valueText, setValuetext] = useState("");
+    formState: {isValid},
+  } = useForm({mode: 'onChange'});
+  const [valueText, setValuetext] = useState('');
   const [isLoading, setLoading] = useState(false);
   useEffect(() => {
     let increment = 30;
-    let time: { label: string; value: number }[] = [];
+    let time: {label: string; value: number}[] = [];
     let startTime = 0;
 
     for (let i = 0; startTime < 24 * 60; i++) {
@@ -32,9 +25,9 @@ const App = () => {
       let min = startTime % 60;
       time[i] = {
         label: (
-          ("0" + (hour % 12)).slice(-2) +
-          ":" +
-          ("0" + min).slice(-2)
+          ('0' + (hour % 12)).slice(-2) +
+          ':' +
+          ('0' + min).slice(-2)
         ).toString(),
         value: hour * 60 + min,
       };
@@ -45,30 +38,55 @@ const App = () => {
     setTime(time);
   }, []);
   const getValuesfromform = (type: any) => {
-    return getValues()[type] ? getValues()[type] : "";
+    return getValues()[type] ? getValues()[type] : '';
   };
   const calcaluateSleep = () => {
-    let durationInBed = getValues()["durationInbed"];
-    let durationAsleep = getValues()["durationAssleep"];
+    let durationInBed = getValues().durationInbed;
+    let durationAsleep = getValues().durationAssleep;
     let result = (100 * durationAsleep) / durationInBed;
     return result.toFixed(2).toString();
   };
   const callData = () => {
     const sleepParsentage = calcaluateSleep();
     api
-      .post("/health-status", { sleepParsentage })
-      .then((res) => {
+      .post('/health-status', {sleepParsentage})
+      .then(res => {
         setValuetext(sleepParsentage);
         setLoading(false);
       })
       .catch(function (error) {
         console.log(
-          "There has been a problem with your fetch operation: " + error.message
+          'There has been a problem with your fetch operation: ' +
+            error.message,
         );
         // ADD THIS THROW error
         throw error;
       });
   };
+
+  type RNPickerProps = {
+    onChange: Function;
+    name: string;
+    label: string;
+  };
+
+  const RNPicker = ({onChange, name, label}: RNPickerProps) => (
+    <View style={styles.RNPickerView}>
+      <Text style={{textAlign: 'center'}}>{label}</Text>
+      <Picker
+        selectedValue={getValuesfromform(name)}
+        onValueChange={value => {
+          onChange(value);
+          setValue('durationInbed', value);
+        }}>
+        {/* <Picker.Item label={'Duration in bed'} value={''} /> */}
+        {timeData.map((i, key) => {
+          return <Picker.Item key={key} label={i.label} value={i.value} />;
+        })}
+      </Picker>
+    </View>
+  );
+
   return (
     <SafeAreaView>
       <View style={styles.header}>
@@ -79,26 +97,11 @@ const App = () => {
       <View style={styles.container}>
         <Controller
           control={control}
-          render={({ field: { onChange } }) => (
-            <RNPickerSelect
-              onValueChange={(value) => {
-                onChange(value);
-                setValue("durationInbed", value);
-              }}
-              items={timeData}
-              value={getValuesfromform("durationInbed")}
-              style={StyleSheet.create({
-                inputIOSContainer: {
-                  paddingVertical: 20,
-                  paddingHorizontal: 10,
-                  borderColor: "#ccc",
-                  borderWidth: 1,
-                  marginBottom: 5,
-                },
-                inputIOS: {
-                  fontSize: 14,
-                },
-              })}
+          render={({field: {onChange}}) => (
+            <RNPicker
+              onChange={onChange}
+              name="durationInbed"
+              label="Duration in bed"
             />
           )}
           rules={{
@@ -108,26 +111,11 @@ const App = () => {
         />
         <Controller
           control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <RNPickerSelect
-              onValueChange={(value) => {
-                onChange(value);
-                setValue("durationAssleep", value);
-              }}
-              items={timeData}
-              style={StyleSheet.create({
-                inputIOSContainer: {
-                  paddingVertical: 20,
-                  paddingHorizontal: 10,
-                  borderColor: "#ccc",
-                  borderWidth: 1,
-                  marginBottom: 5,
-                },
-                inputIOS: {
-                  fontSize: 14,
-                },
-              })}
-              value={getValuesfromform("durationAssleep")}
+          render={({field: {onChange}}) => (
+            <RNPicker
+              onChange={onChange}
+              name="durationAssleep"
+              label="Duration asleep"
             />
           )}
           rules={{
@@ -135,7 +123,6 @@ const App = () => {
           }}
           name="durationAssleep"
         />
-
         <Button
           disabled={!isValid}
           title="Calculate"
@@ -143,9 +130,12 @@ const App = () => {
           onPress={() => {
             setLoading(true);
             callData();
+            console.log(isValid);
           }}
-          color={"#18c3e5"}
+          color={'#18c3e5'}
         />
+      </View>
+      <View style={styles.container}>
         {!isLoading ? (
           <View testID="result">
             <Text>Result: {valueText}</Text>
